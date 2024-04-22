@@ -1,20 +1,37 @@
 name: GitHub Actions Demo
-run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
 on: [push]
 
 jobs:
   hello-world:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
+      - name: Display event trigger
+        run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
       - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
       - name: Check out repository code
         uses: actions/checkout@v4
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
       - run: echo "🖥️ The workflow is now ready to test your code on the runner."
+      - name: Setup PHP with PECL extension
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+      - name: composer install
+        run: composer install
       - name: List files in the repository
         run: |
           ls ${{ github.workspace }}
       - run: echo "🍏 This job's status is ${{ job.status }}."
-      - run: echo "Goedemorgen"
+      - name: Laravel PHPUnit
+        run: vendor/bin/phpunit
+      - name: Playwright Tests
+        run: npx playwright test
+      - name: PHPStan Analysis
+        run: |
+          vendor/bin/phpstan analyse
+          # Oplossingen voor de fouten:
+          # 1. Zorg ervoor dat de `create()` methode van `App\Actions\Jetstream\CreateTeam` een instantie van `App\Models\Team` retourneert.
+          # 2. Controleer de closure die wordt doorgegeven aan `each()` en zorg ervoor dat deze correct is getypeerd voor de `Illuminate\Database\Eloquent\Model` die wordt verwacht.
+          # 3. Zorg ervoor dat de constructor van `Laravel\Jetstream\Mail\TeamInvitation` wordt aangeroepen met een juiste instantie van `Laravel\Jetstream\TeamInvitation`.
+          # 4. Corrigeer de code die probeert toegang te krijgen tot een niet-gedefinieerde eigenschap `$id` van `Illuminate\Database\Eloquent\Model`
